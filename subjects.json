@@ -1,0 +1,28 @@
+{
+    "task1": [
+        "Rédigez un message destiné à vos amis afin de les convier à votre anniversaire et de leur présenter le programme de la fête. (60-120 mots)",
+        "Vous écrivez une réponse à Laura dans laquelle vous décrivez une salle de sport que vous connaissez et vous précisez les renseignements utiles (lieu, types de cours, prix, etc.). (60-120 mots)",
+        "Vous souhaitez organiser un week-end avec vos proches le mois prochain. Vous envoyez un message pour leur expliquer votre plan, en décrivant le lieu, le moyen de transport et les activités prévues. (60-120 mots)",
+        "Vous avez passé des vacances inoubliables. Vous envoyez un message à un(e) ami(e) pour lui raconter vos vacances : précisez le lieu, les activités que vous avez faites et ce que vous avez particulièrement aimé. (60-120 mots)"
+    ],
+    "task2": [
+        "Donnez votre avis en commentaire sous une publication Facebook concernant les études à l’étranger en mentionnant les points positifs et négatifs de cette expérience. (120-150 mots)",
+        "Un concours en ligne invite les participants à raconter leur plus belle fête. Vous participez à ce concours. Dans votre texte, vous racontez comment cette fête s’est déroulée (anniversaire, fête culturelle, etc.) et vous précisez ce que vous en retenez. (120-150 mots)",
+        "COURRIER DES LECTEURS : Partir un an à l’étranger et tout quitter : est-ce une bonne ou une mauvaise idée ? Exprimez votre opinion sur le site voyage.internaute.fr avec des exemples tirés de votre expérience personnelle. (120-150 mots)",
+        "Vous écrivez un article pour un journal local sur l'importance du bénévolat dans votre communauté. Racontez une expérience de bénévolat que vous avez vécue et expliquez pourquoi, selon vous, il est important de s'engager. (120-150 mots)"
+    ],
+    "task3": [
+        {
+            "doc1": "Les élèves du primaire ont la possibilité d’utiliser la technologie pour chercher des vidéos liées à leurs leçons étudiés en classe ou pour s’exercer avec des jeux qui développent leurs compétences en mathématiques, en lecture et en saisie au clavier.",
+            "doc2": "Aujourd’hui, les technologies poussent les enfants à rester inactifs, ce qui inquiète beaucoup les parents. Cela limite les jeux créatifs, les échanges sociales directes et l’activité physique. Pourquoi ne pas encourager vos enfants à poser leurs appareils en essayant des activités ludiques ?"
+        },
+        {
+            "doc1": "Obliger les enfants à lire n’est pas une bonne solution. Lire est une pratique particulière. Quand un enfant aime le sport, on ne le contraint pas, on essaie de le motiver. Il en va de même pour la lecture, selon Laurence T., pédopsychiatre et experte de l’enfance. Elle affirme que « l’amour de la lecture ne peut pas être imposé ».",
+            "doc2": "Lire avec ses enfants est une activité agréable et bénéfique. Elle contribue au développement des enfants, car une lecture régulière leur permet d’apprendre de nouveaux mots. Elle les aide également à mieux écouter et à se familiariser avec les mots écrits. Ce moment est idéal pour partager du plaisir en famille, de manière détendue et ludique. Les parents doivent essayer de lire des histoires à leurs enfants dès leur jeune âge, même après une journée fatigante. Cinq à dix minutes par jour sont suffisantes pour leur donner le goût de la lecture durablement."
+        },
+        {
+            "doc1": "Le travail occupe une place importante dans notre vie : dès l’enfance, on nous demande : « Que veux-tu devenir plus tard ? ». Même s’il peut apporter de la satisfaction, il est souvent source de fatigue et peut donner l’impression d’être coincé dans une routine. Aujourd’hui, beaucoup de personnes constatent un déséquilibre entre leur vie professionnelle et leur vie personnelle. Il devient nécessaire de réfléchir à la place du travail dans notre société. Certains pensent qu’en travaillant moins, on pourrait profiter de davantage de temps libre, être plus heureux et mieux vivre.",
+            "doc2": "Le travail fait partie de notre identité sociale. Lorsqu’on rencontre quelqu’un pour la première fois, on demande souvent : « Que faites-vous dans la vie ? », ce qui montre l’importance du travail dans la perception de soi. Selon le spécialiste Jean-Daniel Remond, la vie professionnelle contribue à se construire : elle permet de rencontrer des gens, de créer des réseaux personnels et professionnels, de se sentir utile et même de se faire des amis. Même si certains décident de quitter leur emploi, pour la plupart, travailler est essentiel pour exister. Le travail reste donc crucial pour l’équilibre personnel et collectif."
+        }
+    ]
+}

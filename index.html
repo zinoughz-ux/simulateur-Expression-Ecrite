@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCF Canada - Simulateur Expression Écrite</title>
+    <meta name="description" content="Simulateur d'Expression Écrite TCF Canada avec évaluation IA conforme aux standards NCLC/CECRL">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>⚙️ Configuration IA</h2>
+            <button class="modal-close" onclick="closeSettings()">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Provider Selector -->
+            <div class="form-group">
+                <label for="providerSelect">Fournisseur IA</label>
+                <select id="providerSelect" onchange="onProviderChange()">
+                    <option value="github">🐙 GitHub Models (Recommandé)</option>
+                    <option value="nvidia">🟢 Nvidia NIM</option>
+                </select>
+            </div>
+
+            <!-- GitHub Config -->
+            <div id="githubConfig">
+                <div class="form-group">
+                    <label for="githubApiKey">Clé API GitHub</label>
+                    <input type="password" id="githubApiKey" placeholder="ghp_..." autocomplete="off">
+                    <small>Token GitHub avec permission <code>models:read</code> — <a href="https://github.com/settings/tokens" target="_blank" style="color: var(--accent);">Créer un token</a></small>
+                </div>
+                <div class="form-group">
+                    <label for="githubModelSelect">Modèle IA (GitHub)</label>
+                    <select id="githubModelSelect">
+                        <option value="openai/gpt-4.1-mini">GPT-4.1 Mini (Recommandé)</option>
+                        <option value="openai/gpt-4.1">GPT-4.1</option>
+                        <option value="openai/gpt-4.1-nano">GPT-4.1 Nano (Rapide)</option>
+                        <option value="openai/gpt-4o">GPT-4o</option>
+                        <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                        <option value="meta/llama-4-maverick">Llama 4 Maverick</option>
+                        <option value="meta/llama-4-scout">Llama 4 Scout</option>
+                        <option value="mistralai/mistral-small-2503">Mistral Small</option>
+                        <option value="deepseek/DeepSeek-V3-0324">DeepSeek V3</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Nvidia Config -->
+            <div id="nvidiaConfig" style="display:none;">
+                <div class="form-group">
+                    <label for="nvidiaApiKey">Clé API Nvidia</label>
+                    <input type="password" id="nvidiaApiKey" placeholder="nvapi-..." autocomplete="off">
+                    <small>Obtenez votre clé sur <a href="https://build.nvidia.com/" target="_blank" style="color: var(--accent);">build.nvidia.com</a></small>
+                </div>
+                <div class="form-group">
+                    <label for="nvidiaModelSelect">Modèle IA (Nvidia)</label>
+                    <select id="nvidiaModelSelect">
+                        <option value="meta/llama-3.1-70b-instruct">Llama 3.1 70B (Recommandé)</option>
+                        <option value="meta/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+                        <option value="meta/llama-3.1-405b-instruct">Llama 3.1 405B</option>
+                        <option value="meta/llama-3.1-8b-instruct">Llama 3.1 8B (Rapide)</option>
+                        <option value="mistralai/mistral-large-2-instruct">Mistral Large 2</option>
+                        <option value="google/gemma-2-27b-it">Gemma 2 27B</option>
+                        <option value="qwen/qwen2.5-72b-instruct">Qwen 2.5 72B</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Auto-selection toggle -->
+            <div class="form-group" style="margin-top: 0.5rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="autoFallback" style="width:auto;">
+                    <span>Auto-basculement : si le fournisseur principal échoue, essayer l'autre automatiquement</span>
+                </label>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+                <label>Banque de sujets réels</label>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Récupérer les derniers sujets du web</span>
+                    <button class="btn-gen" id="btnUpdateSubjects" onclick="updateSubjectsFromWeb()" title="Mise à jour automatique" style="width:120px; border: 1px solid var(--border-accent); cursor:pointer;">
+                        🔄 Actualiser
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="saveSettings()" style="width:100%; margin-top:1rem;">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header>
+    <div class="header-inner">
+        <div class="header-left">
+            <img src="tcf-canada.png" alt="TCF Canada" class="header-logo">
+            <div>
+                <h1>Simulateur Expression Écrite</h1>
+                <p class="header-subtitle">TCF Canada • NCLC / CECRL</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn-icon" onclick="showHistory()" title="Historique">📊</button>
+            <button class="btn-icon" onclick="openSettings()" title="Paramètres">⚙️</button>
+        </div>
+    </div>
+</header>
+
+<!-- ============ MAIN APP ============ -->
+<div class="app-container" id="appView">
+    <div class="container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <!-- Mode Selector -->
+            <div class="mode-selector">
+                <button class="mode-btn active" id="mode-complet" onclick="changeSessionMode('complet')">
+                    <span class="mode-icon">📝</span> EXAMEN COMPLET
+                </button>
+                <button class="mode-btn" id="mode-training" onclick="changeSessionMode('training')">
+                    <span class="mode-icon">🎯</span> ENTRAÎNEMENT
+                </button>
+            </div>
+
+            <h3 class="sidebar-label" id="sidebar-label">PARCOURS EXAMEN • 60 min</h3>
+
+            <!-- Task Buttons -->
+            <button class="task-btn active" id="task1-btn" onclick="selectTask(1)">
+                <div class="task-btn-header">
+                    <span class="task-number">01</span>
+                    <span class="task-duration" id="dur1">10 min</span>
+                </div>
+                <div class="task-btn-title">Message Personnel</div>
+                <div class="task-btn-meta">60-120 mots • Courriel / Lettre</div>
+                <div class="task-progress" id="progress1"></div>
+            </button>
+
+            <button class="task-btn" id="task2-btn" onclick="selectTask(2)">
+                <div class="task-btn-header">
+                    <span class="task-number">02</span>
+                    <span class="task-duration" id="dur2">20 min</span>
+                </div>
+                <div class="task-btn-title">Article / Récit Argumenté</div>
+                <div class="task-btn-meta">120-150 mots • Blog / Rapport</div>
+                <div class="task-progress" id="progress2"></div>
+            </button>
+
+            <button class="task-btn" id="task3-btn" onclick="selectTask(3)">
+                <div class="task-btn-header">
+                    <span class="task-number">03</span>
+                    <span class="task-duration" id="dur3">30 min</span>
+                </div>
+                <div class="task-btn-title">Analyse Comparative</div>
+                <div class="task-btn-meta">120-180 mots • Opinion argumentée</div>
+                <div class="task-progress" id="progress3"></div>
+            </button>
+
+            <!-- Info Box -->
+            <div class="sidebar-info" id="sidebar-info">
+                <p id="mode-desc">
+                    <strong>Mode Examen :</strong> 60 minutes pour réaliser les 3 tâches consécutivement. Passez d'une tâche à l'autre librement.
+                </p>
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE -->
+        <main class="workspace">
+
+            <!-- Start Overlay -->
+            <div class="start-overlay" id="startOverlay">
+                <div class="start-overlay-content">
+                    <div class="start-icon">✍️</div>
+                    <h2 id="overlay-title">Prêt pour l'examen complet ?</h2>
+                    <p id="overlay-desc">Le chronomètre de 60 minutes démarrera dès que vous appuierez sur le bouton. Vous pourrez naviguer librement entre les 3 tâches.</p>
+                    <button class="btn-primary btn-lg" onclick="startSession()">
+                        Commencer la session
+                    </button>
+                </div>
+            </div>
+
+            <!-- Info Bar -->
+            <div class="info-bar">
+                <div class="info-bar-left">
+                    <div class="timer-box">
+                        <span class="timer-label">TEMPS</span>
+                        <span class="timer" id="timer">--:--</span>
+                    </div>
+                    <div class="task-indicator" id="taskIndicator">Tâche 1</div>
+                </div>
+                <div class="info-bar-right">
+                    <div class="word-box">
+                        <span class="word-label">MOTS</span>
+                        <span class="word-counter" id="wordCount">0</span>
+                        <span class="word-sep">/</span>
+                        <span class="word-limit" id="wordLimit">120</span>
+                    </div>
+                    <div class="word-range" id="wordRange">min: 60 • max: 120</div>
+                </div>
+            </div>
+
+            <!-- Scenario Box -->
+            <div class="scenario-section">
+                <div class="scenario-header">
+                    <span class="scenario-badge" id="scenarioBadge">CONSIGNE</span>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button class="btn-gen" id="btnCustomScenario" onclick="customScenario()" disabled>
+                            ✏️ Sujet personnalisé
+                        </button>
+                        <button class="btn-gen" id="btnRealScenario" onclick="pickRealSubject()" style="flex:1.5;" disabled>
+                            📚 Sujets réels
+                        </button>
+                        <button class="btn-gen" id="btnGenerate" onclick="generateScenario()" style="flex:1;" disabled>
+                            🤖 IA
+                        </button>
+                    </div>
+                </div>
+                <div class="scenario-box" id="scenario">
+                    <p class="scenario-placeholder">Appuyez sur « Commencer la session » pour générer un sujet d'examen.</p>
+                </div>
+            </div>
+
+            <!-- Writing Area -->
+            <div class="writing-section">
+                <div class="writing-header">
+                    <span>VOTRE RÉDACTION</span>
+                    <span class="writing-status" id="writingStatus">—</span>
+                </div>
+                <textarea id="userInput" placeholder="Saisissez votre réponse ici..." disabled></textarea>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <span class="session-status" id="saveStatus">⏳ Session non démarrée</span>
+                <div class="controls-right">
+                    <button class="btn-secondary" id="btnNextTask" onclick="goToNextTask()" style="display:none;">
+                        Tâche suivante →
+                    </button>
+                    <button class="btn-primary" id="submitBtn" onclick="submitForEvaluation()" disabled>
+                        Soumettre pour Évaluation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading-panel" id="loadingPanel" style="display:none;">
+                <div class="loading-spinner"></div>
+                <p>Analyse de votre rédaction en cours...</p>
+                <small>L'examinateur IA évalue votre texte selon les critères TCF Canada</small>
+            </div>
+
+            <!-- Evaluation Result -->
+            <div class="evaluation-panel" id="evalResult" style="display:none;">
+                <div class="eval-header">
+                    <div>
+                        <h2>📋 Rapport d'Évaluation</h2>
+                        <p class="eval-task-label" id="evalTaskLabel">Tâche 1 — Message Personnel</p>
+                    </div>
+                    <div class="score-block">
+                        <div class="score-value" id="finalScore">--</div>
+                        <div class="score-label">/20</div>
+                        <div class="score-badge-container">
+                            <span class="badge-cecr" id="cecrLevel">--</span>
+                            <span class="badge-nclc" id="nclcLevel">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="eval-grid">
+                    <!-- Erreurs identifiées -->
+                    <div class="eval-card eval-card-errors">
+                        <div class="eval-card-title">⚠️ Erreurs identifiées</div>
+                        <div class="eval-card-content" id="evalErrors">—</div>
+                    </div>
+
+                    <!-- Analyse structurelle -->
+                    <div class="eval-card">
+                        <div class="eval-card-title">🏗️ Analyse structurelle</div>
+                        <div class="eval-card-content" id="evalStructure">—</div>
+                    </div>
+
+                    <!-- Critères linguistiques -->
+                    <div class="eval-card">
+                        <div class="eval-card-title">📖 Critères linguistiques</div>
+                        <div class="eval-card-content" id="evalLing">—</div>
+                    </div>
+
+                    <!-- Critères pragmatiques -->
+                    <div class="eval-card">
+                        <div class="eval-card-title">🔗 Critères pragmatiques</div>
+                        <div class="eval-card-content" id="evalPrag">—</div>
+                    </div>
+
+                    <!-- Critères sociolinguistiques -->
+                    <div class="eval-card">
+                        <div class="eval-card-title">🌍 Critères sociolinguistiques</div>
+                        <div class="eval-card-content" id="evalSocio">—</div>
+                    </div>
+
+                    <!-- Critères spécifiques -->
+                    <div class="eval-card">
+                        <div class="eval-card-title">🎯 Critères spécifiques à la tâche</div>
+                        <div class="eval-card-content" id="evalSpecific">—</div>
+                    </div>
+                </div>
+
+                <!-- Commentaires -->
+                <div class="eval-card eval-card-comments">
+                    <div class="eval-card-title">💡 Commentaires & Priorités d'amélioration</div>
+                    <div class="eval-card-content" id="evalComments">—</div>
+                </div>
+
+                <div class="eval-actions">
+                    <button class="btn-secondary" onclick="resetSession()">🔄 Nouvelle session</button>
+                    <button class="btn-primary" onclick="saveToHistory()">💾 Sauvegarder dans l'historique</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ============ HISTORY VIEW ============ -->
+<div class="history-view" id="historyView" style="display:none;">
+    <div class="history-container">
+        <div class="history-header">
+            <h2>📊 Historique des sessions</h2>
+            <button class="btn-secondary" onclick="closeHistory()">← Retour au simulateur</button>
+        </div>
+        <div class="history-list" id="historyList">
+            <p class="history-empty">Aucune session enregistrée pour le moment.</p>
+        </div>
+    </div>
+</div>
+
+<script src="subjects-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
