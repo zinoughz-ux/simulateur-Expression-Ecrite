@@ -41,7 +41,8 @@ build/Release
 node_modules/
 jspm_packages/
 package.json/
-app.js
+app.js/
+scraper/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
